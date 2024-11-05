@@ -12,7 +12,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    echo "Building the project version:1.0..."
+                    echo "Building the project version:1.0... for checking poll scm"
                     // Add your build commands here
                 }
             }
