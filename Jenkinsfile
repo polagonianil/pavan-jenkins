@@ -4,8 +4,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo "My name is Anil"
-                echo "Checking out the code..."
+                // Correct syntax for checking out a Git repository
+                git url: 'https://github.com/polagonianil/pavan-jenkins.git'
             }
         }
 
@@ -48,9 +48,3 @@ pipeline {
     post {
         success {
             echo "Pipeline completed successfully!"
-        }
-        failure {
-            echo "Pipeline failed."
-        }
-    }
-}
