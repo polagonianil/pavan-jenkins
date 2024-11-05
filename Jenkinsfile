@@ -39,4 +39,18 @@ pipeline {
                         ],
                         ok: 'Proceed with Deployment'
                     )
-                    echo "De
+                    echo "Deploying version ${userInput.VERSION} to the ${userInput.ENVIRONMENT} environment..."
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Pipeline completed successfully!"
+        }
+        failure {
+            echo "Pipeline failed."
+        }
+    }
+}
