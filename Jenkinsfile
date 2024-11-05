@@ -4,8 +4,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Correct syntax for checking out a Git repository
-                git url: 'https://github.com/polagonianil/pavan-jenkins.git'
+                // Specify the branch explicitly
+                git url: 'https://github.com/polagonianil/pavan-jenkins.git', branch: 'main'
             }
         }
 
@@ -39,18 +39,4 @@ pipeline {
                         ],
                         ok: 'Proceed with Deployment'
                     )
-                    echo "Deploying version ${userInput.VERSION} to the ${userInput.ENVIRONMENT} environment..."
-                }
-            }
-        }
-    }
-
-    post {
-        success {
-            echo "Pipeline completed successfully!"
-        }
-        failure {
-            echo "Pipeline failed."
-        }
-    }
-}
+                    echo "De
