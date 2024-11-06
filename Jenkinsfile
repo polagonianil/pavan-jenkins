@@ -5,7 +5,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Specify the branch explicitly
-                git url: 'https://github.com/polagonianil/pavan-jenkins.git', branch: 'main'
+               // git url: 'https://github.com/polagonianil/pavan-jenkins.git', branch: 'main'
             }
         }
 
