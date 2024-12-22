@@ -1,56 +1,54 @@
 pipeline {
-    agent any
 
+    parameters {
+        booleanParam(name: 'autoApprove', defaultValue: false, description: 'Automatically run apply after generating plan?')
+    } 
+    environment {
+        AWS_ACCESS_KEY_ID     = credentials('AWS_ACCESS_KEY_ID')
+        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
+    }
+
+   agent  any
     stages {
-        stage('Checkout') {
+        stage('checkout') {
             steps {
-                // Specify the branch explicitly
-               // git url: 'https://github.com/polagonianil/pavan-jenkins.git', branch: 'main'
-            }
-        }
-
-        stage('Build') {
-            steps {
-                script {
-                    echo "Building the project version:1.0... for checking poll scm"
-                    // Add your build commands here
+                 script{
+                        dir("terraform")
+                        {
+                            git "https://github.com/yeshwanthlm/Terraform-Jenkins.git"
+                        }
+                    }
                 }
             }
-        }
 
-        stage('Test') {
+        stage('Plan') {
             steps {
-                script {
-                    echo "Running tests for version:1.0..."
-                    // Add your test commands here
-                }
+                sh 'pwd;cd terraform/ ; terraform init'
+                sh "pwd;cd terraform/ ; terraform plan -out tfplan"
+                sh 'pwd;cd terraform/ ; terraform show -no-color tfplan > tfplan.txt'
             }
         }
+        stage('Approval') {
+           when {
+               not {
+                   equals expected: true, actual: params.autoApprove
+               }
+           }
 
-        stage('Deploy') {
+           steps {
+               script {
+                    def plan = readFile 'terraform/tfplan.txt'
+                    input message: "Do you want to apply the plan?",
+                    parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
+               }
+           }
+       }
+
+        stage('Apply') {
             steps {
-                script {
-                    // Adding input step with additional parameters
-                    def userInput = input(
-                        message: 'Deployment Approval',
-                        parameters: [
-                            string(name: 'VERSION', defaultValue: '1.0', description: 'Enter the version to deploy'),
-                            choice(name: 'ENVIRONMENT', choices: ['dev', 'qa', 'prod'], description: 'Select the environment')
-                        ],
-                        ok: 'Proceed with Deployment'
-                    )
-                    echo "Deploying version ${userInput.VERSION} to the ${userInput.ENVIRONMENT} environment..."
-                }
+                sh "pwd;cd terraform/ ; terraform apply -input=false tfplan"
             }
         }
     }
 
-    post {
-        success {
-            echo "Pipeline completed successfully!"
-        }
-        failure {
-            echo "Pipeline failed."
-        }
-    }
-}
+  }
